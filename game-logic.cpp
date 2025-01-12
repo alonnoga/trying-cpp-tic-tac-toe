@@ -1,14 +1,44 @@
 #include "game-logic.hpp"
 
 namespace GameLogic {
+	void onChange(int x, int y, std::function<void(Event)> onEvent) {
+		using namespace internal;
+
+		if (board[y][x] != " ") {
+			return;
+		}
+		board[y][x] = internal::activePlayer;
+		onEvent(PutEvent{ .x = x, .y = y, .piece = activePlayer });
+		auto winnerOpt = checkForWinner(board);
+		if (winnerOpt) {
+			onEvent(*winnerOpt);
+			return;
+		}
+		activePlayer = activePlayer == X ? O : X;
+		onEvent(TurnChangedEvent{ .player = activePlayer });
+
+		return;
+	}
+
+	const Board& getBoard() {
+		using namespace internal;
+
+		return board;
+	}
+
+	const Player& getActivePlayer() {
+		using namespace internal;
+
+		return activePlayer;
+	}
 
 	namespace internal {
-		auto board = Board{
+		Board board = Board{
 			{ EMPTY, EMPTY, EMPTY },
 			{ EMPTY, EMPTY, EMPTY },
 			{ EMPTY, EMPTY, EMPTY },
 		};
-		auto activePlayer = Player{ X };
+		Player activePlayer = Player{ X };
 
 		std::optional<WinEvent> checkForWinner(const Board& board) {
 			struct Direction {
@@ -28,7 +58,6 @@ namespace GameLogic {
 					{ x + dx, y + dy },
 					{ x + dx * 2, y + dy * 2 }
 				};
-
 
 				for (auto& [x, y] : sequence) {
 					if (board[y][x] != player) return std::nullopt;
@@ -56,37 +85,5 @@ namespace GameLogic {
 
 			return std::nullopt;
 		}
-	}
-
-	void onChange(int x, int y, std::function<void(Event)> onEvent) {
-		using namespace internal;
-
-		if (board[y][x] != " ") {
-			return;
-		}
-		board[y][x] = internal::activePlayer;
-		onEvent(PutEvent{ .x = x, .y = y, .piece = activePlayer });
-		auto winnerOpt = checkForWinner(board);
-		if (winnerOpt) {
-			onEvent(*winnerOpt);
-			return;
-		}
-		activePlayer = activePlayer == X ? O : X;
-		onEvent(TurnChangedEvent{ .player = activePlayer });
-
-		return;
-	}
-
-
-	const Board& getBoard() {
-		using namespace internal;
-
-		return board;
-	}
-
-	const Player& getActivePlayer() {
-		using namespace internal;
-
-		return activePlayer;
 	}
 };
