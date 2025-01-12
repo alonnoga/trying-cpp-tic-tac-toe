@@ -1,53 +1,6 @@
 #include "game-ui.hpp"
 
 namespace GameUI {
-
-	namespace internal {
-		using namespace ftxui;
-		// a string "code" representing an ftxui button configuration
-		using Code = std::string; // X, O, EMPTY, X_COLORED, O_COLORED
-		using UIBoard = std::vector<std::vector<Code>>;
-		using namespace std::string_literals;
-
-		struct UIState {
-			UIBoard uiBoard;
-			std::string activePlayer;
-			bool gameWon = false;
-		};
-
-		UIState state;
-
-		Code cellToFTXUICell(const GameLogic::Cell& cell) {
-			if (cell == " ") return "EMPTY"s;
-			if (cell == "X") return "X"s;
-			if (cell == "O") return "O"s;
-		}
-
-		ButtonOption getButtonOptions() {
-			ButtonOption option{};
-			option.transform = [](const EntryState& s) {
-				std::string content;
-				auto borderStyle = s.focused ? borderStyled(LIGHT, Color::BlueLight) : border;
-				if (s.label == "EMPTY") {
-					return text("   ") | borderStyle | center;
-				}
-				if (s.label == "X") {
-					return text(" X ") | borderStyle | center;
-				}
-				if (s.label == "O") {
-					return text(" O ") | borderStyle | center;
-				}
-				if (s.label == "X_COLORED") {
-					return text(" X ") | borderStyled(LIGHT, Color::Green) | center;
-				}
-				if (s.label == "O_COLORED") {
-					return text(" O ") | borderStyled(LIGHT, Color::Green) | center;
-				}
-				};
-			return option;
-		}
-	}
-
 	void init(const GameLogic::Board& board, const GameLogic::Player& startingPlayer) {
 		using namespace internal;
 
@@ -109,5 +62,39 @@ namespace GameUI {
 
 		auto screen = ScreenInteractive::FixedSize(40, 20);
 		screen.Loop(ui);
+	}
+
+	namespace internal {
+		UIState state;
+
+		Code cellToFTXUICell(const GameLogic::Cell& cell) {
+			if (cell == " ") return "EMPTY"s;
+			if (cell == "X") return "X"s;
+			if (cell == "O") return "O"s;
+		}
+
+		ButtonOption getButtonOptions() {
+			ButtonOption option{};
+			option.transform = [](const EntryState& s) {
+				std::string content;
+				auto borderStyle = s.focused ? borderStyled(LIGHT, Color::BlueLight) : border;
+				if (s.label == "EMPTY") {
+					return text("   ") | borderStyle | center;
+				}
+				if (s.label == "X") {
+					return text(" X ") | borderStyle | center;
+				}
+				if (s.label == "O") {
+					return text(" O ") | borderStyle | center;
+				}
+				if (s.label == "X_COLORED") {
+					return text(" X ") | borderStyled(LIGHT, Color::Green) | center;
+				}
+				if (s.label == "O_COLORED") {
+					return text(" O ") | borderStyled(LIGHT, Color::Green) | center;
+				}
+				};
+			return option;
+		}
 	}
 }

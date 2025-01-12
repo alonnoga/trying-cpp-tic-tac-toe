@@ -1,4 +1,3 @@
-#include "tic-tac-toe.h"
 #include "game-logic.hpp"
 #include "game-ui.hpp"
 

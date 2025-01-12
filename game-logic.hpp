@@ -43,6 +43,13 @@ namespace GameLogic {
 	void onChange(int x, int y, std::function<void(Event)> onEvent);
 	const Board& getBoard();
 	const Player& getActivePlayer();
+
+	namespace internal {
+		extern Board board;
+		extern Player activePlayer;
+
+		std::optional<WinEvent> checkForWinner(const Board& board);
+	}
 }
 
 #endif
